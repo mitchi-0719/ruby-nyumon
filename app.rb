@@ -35,3 +35,10 @@ delete '/todos/:id' do
   DB.execute('DELETE FROM todos WHERE id = ?', [id])
   redirect '/todos'
 end
+
+
+get '/api/todos' do
+  content_type :json
+  todos = DB.execute('SELECT * FROM todos')
+  JSON.pretty_generate(todos)
+end
