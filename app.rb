@@ -16,3 +16,8 @@ post '/todos' do
   DB.execute('INSERT INTO todos (title) VALUES (?)', [title])
   redirect '/'
 end
+
+get '/todos/:id/edit' do
+  @todo = DB.execute('SELECT * FROM todos WHERE id = ?', [params[:id]]).first
+  erb :edit
+end
