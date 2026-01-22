@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sqlite3'
 require './db/todos'
+require 'json'
 
 get '/' do
   'Hello, World!'
@@ -36,9 +37,43 @@ delete '/todos/:id' do
   redirect '/todos'
 end
 
-
 get '/api/todos' do
   content_type :json
   todos = DB.execute('SELECT * FROM todos')
   JSON.pretty_generate(todos)
+end
+
+post '/api/todos' do
+  content_type :json
+  title = params['title']
+
+  DB.execute('INSERT INTO todos (title) VALUES (?)', [title])
+  id = DB.last_insert_row_id
+  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  JSON.pretty_generate(todo)
+end
+
+get '/api/todos/:id' do
+  content_type :json
+  id = params[:id]
+  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  JSON.pretty_generate(todo)
+end
+
+put '/api/todos/:id' do
+  content_type :json
+  id = params[:id]
+  title = params['title']
+
+  DB.execute('UPDATE todos SET title = ? WHERE id = ?', [title, id])
+  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  JSON.pretty_generate(todo)
+end
+
+delete '/api/todos/:id' do
+  content_type :json
+  id = params[:id]
+  DB.execute('DELETE FROM todos WHERE id = ?', [id])
+  res = { 'message' => 'TODO deleted' }
+  JSON.pretty_generate(res)
 end
