@@ -29,3 +29,9 @@ put '/todos/:id' do
   DB.execute('UPDATE todos SET title = ? WHERE id = ?', [title, id])
   redirect '/todos'
 end
+
+delete '/todos/:id' do
+  id = params[:id]
+  DB.execute('DELETE FROM todos WHERE id = ?', [id])
+  redirect '/todos'
+end
