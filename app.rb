@@ -21,3 +21,11 @@ get '/todos/:id/edit' do
   @todo = DB.execute('SELECT * FROM todos WHERE id = ?', [params[:id]]).first
   erb :edit
 end
+
+put '/todos/:id' do
+  title = params['title']
+  id = params[:id]
+  puts [title, id]
+  DB.execute('UPDATE todos SET title = ? WHERE id = ?', [title, id])
+  redirect '/todos'
+end
