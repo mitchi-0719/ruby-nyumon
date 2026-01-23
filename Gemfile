@@ -8,4 +8,6 @@ group :test do
   gem 'puma'
   gem "sinatra"
   gem "sqlite3"
+  gem 'sinatra-activerecord'
+  gem 'rake'
 end

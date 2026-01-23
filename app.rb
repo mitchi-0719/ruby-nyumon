@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sqlite3'
 require './db/todos'
 require 'json'
+require 'sinatra/activerecord'
+require './models/todo'
 
 get '/' do
   'Hello, World!'
@@ -81,3 +83,7 @@ delete '/api/todos/:id' do
   res = { 'message' => 'TODO deleted' }
   JSON.pretty_generate(res)
 end
+
+ActiveRecord::Base.establish_connection(
+  YAML.load_file('config/database.yml')[ENV['RACK_ENV'] || 'development']
+)
