@@ -5,6 +5,16 @@ require 'capybara/rspec'
 ENV['RACK_ENV'] = 'test'
 Capybara.app_host = 'http://localhost:4567'  # ホストを指定
 
+# Rack::Test が利用する Sinatra アプリを返すヘルパー
+def app
+  Sinatra::Application
+end
+
+# Rack::Test の `last_response` を `response` として参照できるようにする
+def response
+  last_response
+end
+
 # db/todosファイルが存在する場合のみ読み込む
 if File.exist?(File.expand_path('../db/todos.rb', __dir__))
   require_relative '../db/todos'
@@ -59,3 +69,13 @@ RSpec.configure do |config|
     end
   end
 end 
+
+# have_http_status が使われているテスト向けに簡易マッチャを定義
+RSpec::Matchers.define :have_http_status do |expected|
+  match do |response_obj|
+    response_obj.status == expected
+  end
+  failure_message do |response_obj|
+    "expected \\#{response_obj.status} to eq \\#{expected}"
+  end
+end

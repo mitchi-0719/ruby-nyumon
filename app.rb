@@ -39,7 +39,8 @@ end
 
 get '/api/todos' do
   content_type :json
-  todos = DB.execute('SELECT * FROM todos')
+  rows = DB.execute('SELECT * FROM todos')
+  todos = rows.map { |r| { 'id' => r[0], 'title' => r[1], 'created_at' => r[2] } }
   JSON.pretty_generate(todos)
 end
 
@@ -49,14 +50,16 @@ post '/api/todos' do
 
   DB.execute('INSERT INTO todos (title) VALUES (?)', [title])
   id = DB.last_insert_row_id
-  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  row = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  todo = { 'id' => row[0], 'title' => row[1], 'created_at' => row[2] }
   JSON.pretty_generate(todo)
 end
 
 get '/api/todos/:id' do
   content_type :json
   id = params[:id]
-  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  row = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  todo = row ? { 'id' => row[0], 'title' => row[1], 'created_at' => row[2] } : {}
   JSON.pretty_generate(todo)
 end
 
@@ -66,7 +69,8 @@ put '/api/todos/:id' do
   title = params['title']
 
   DB.execute('UPDATE todos SET title = ? WHERE id = ?', [title, id])
-  todo = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  row = DB.execute('SELECT * FROM todos WHERE id = ?', [id]).first
+  todo = row ? { 'id' => row[0], 'title' => row[1], 'created_at' => row[2] } : {}
   JSON.pretty_generate(todo)
 end
 

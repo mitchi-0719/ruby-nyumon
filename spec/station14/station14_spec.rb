@@ -22,7 +22,28 @@ RSpec.describe 'API: TODOリスト操作', clear_db: true do
 
   describe 'GET /api/todos/:id' do
     it '指定したIDのTODOを取得できること' do
-      # ここにテストを書く
+      get "/api/todos/#{todo_id}"
+
+      expect(response).to have_http_status(200)
+      body = JSON.parse(last_response.body)
+      expect(body).to be_a(Hash)
+      expect(body['id']).to eq(todo_id)
+      expect(body['title']).to eq('テスト用TODO')
+    end
+  end
+
+  describe 'GET /api/todos' do
+    it 'TODO の一覧を取得する' do
+      get '/api/todos'
+
+      expect(response).to have_http_status(200)
+      body = JSON.parse(last_response.body)
+      expect(body).to be_a(Array)
+      # 先に登録された todo_id を含んでいること
+      ids = body.map { |t| t['id'] }
+      expect(ids).to include(todo_id)
+      todo = body.find { |t| t['id'] == todo_id }
+      expect(todo['title']).to eq('テスト用TODO')
     end
   end
 end
